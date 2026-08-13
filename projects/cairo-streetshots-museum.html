@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cairo Streetshots Museum — Hadeel Zakaria</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Work+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #100d0a;
+    --card: #1c1712;
+    --line: rgba(201,162,75,.22);
+    --line-strong: rgba(201,162,75,.45);
+    --gold: #c9a24b;
+    --gold-bright: #e8c675;
+    --text: #f2ede2;
+    --text-muted: #9c9081;
+    --display: 'Bebas Neue', sans-serif;
+    --body: 'Work Sans', sans-serif;
+  }
+  *{ box-sizing:border-box; }
+  body{
+    margin:0; background:var(--bg); color:var(--text);
+    font-family:var(--body); font-weight:300; font-size:17px; line-height:1.65;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{ max-width:1000px; margin:0 auto; padding:0 44px; }
+  .topbar{ padding:30px 0; border-bottom:1px solid var(--line); }
+  .back-link{ font-size:12px; letter-spacing:.12em; text-transform:uppercase; color:var(--text-muted); text-decoration:none; }
+  .back-link:hover{ color:var(--gold-bright); }
+  .project-header{ padding:70px 0 40px; }
+  .eyebrow{ font-size:11.5px; letter-spacing:.2em; text-transform:uppercase; color:var(--gold); margin-bottom:16px; }
+  h1{ font-family:var(--display); font-weight:400; font-size:clamp(2.4rem,6vw,4.2rem); letter-spacing:.01em; margin:0 0 20px; color:var(--gold); }
+  .meta-row{ display:flex; flex-wrap:wrap; gap:28px; margin-top:30px; padding-top:24px; border-top:1px solid var(--line); }
+  .meta-item .label{ font-size:10.5px; letter-spacing:.12em; text-transform:uppercase; color:var(--text-muted); margin-bottom:4px; }
+  .meta-item .value{ font-size:14px; color:var(--text); }
+  .project-hero-img{
+    width:100%; aspect-ratio:16/10; margin:40px 0 60px;
+    border:1px solid var(--line-strong); background:linear-gradient(160deg,#1a1510,#100d0a);
+    display:flex; align-items:center; justify-content:center;
+    font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:var(--text-muted); overflow:hidden;
+  }
+  .project-hero-img img{ width:100%; height:100%; object-fit:cover; display:block; }
+  .project-body p{ max-width:70ch; margin:0 0 22px; }
+  .project-body h2{ font-family:var(--display); font-weight:400; font-size:1.7rem; letter-spacing:.01em; margin:50px 0 20px; color:var(--text); }
+  .gallery{ display:grid; grid-template-columns:1fr 1fr; gap:2px; background:var(--line); margin-top:20px; }
+  .gallery-tile{
+    aspect-ratio:4/3; background:linear-gradient(160deg,#1a1510,#100d0a);
+    display:flex; align-items:center; justify-content:center;
+    font-size:10.5px; letter-spacing:.1em; text-transform:uppercase; color:var(--text-muted); overflow:hidden;
+  }
+  .gallery-tile img{ width:100%; height:100%; object-fit:cover; display:block; }
+  footer{ padding:90px 0 60px; border-top:1px solid var(--line); margin-top:80px; text-align:center; }
+  footer a{ color:var(--gold); text-decoration:none; font-size:13px; letter-spacing:.08em; text-transform:uppercase; }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="wrap">
+    <a class="back-link" href="../index.html#architecture">← Back to portfolio</a>
+  </div>
+</div>
+
+<div class="wrap">
+  <div class="project-header">
+    <div class="eyebrow">Museum</div>
+    <h1>Cairo Streetshots Museum</h1>
+    <p style="max-width:65ch; color:var(--text-muted);">Placeholder — add a one-line summary of the project's concept and site here.</p>
+    <div class="meta-row">
+      <div class="meta-item"><div class="label">Type</div><div class="value">Museum</div></div>
+      <div class="meta-item"><div class="label">Year</div><div class="value">2026</div></div>
+      <div class="meta-item"><div class="label">Site</div><div class="value">Placeholder</div></div>
+      <div class="meta-item"><div class="label">Status</div><div class="value">Academic Project</div></div>
+    </div>
+  </div>
+
+  <div class="project-hero-img">
+    <!-- replace this comment + text with: <img src="../Images/cairo-streetshots-museum-hero.jpg" alt="Cairo Streetshots Museum"> -->
+    Main project image / render — placeholder
+  </div>
+
+  <div class="project-body">
+    <p>Write your full project description here — the design concept, the site context, and the key decisions you made.</p>
+    <h2>Design Approach</h2>
+    <p>Expand here on the museum's spatial narrative, circulation, and how it showcases street photography of Cairo.</p>
+    <h2>Drawings &amp; Images</h2>
+    <div class="gallery">
+      <div class="gallery-tile">Plan — placeholder</div>
+      <div class="gallery-tile">Section — placeholder</div>
+      <div class="gallery-tile">Elevation — placeholder</div>
+      <div class="gallery-tile">Render — placeholder</div>
+    </div>
+  </div>
+
+  <footer>
+    <a href="../index.html#architecture">← Back to all projects</a>
+  </footer>
+</div>
+
+</body>
+</html>
