@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Architectural Analysis — Hadeel Zakaria</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Work+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #100d0a;
+    --card: #1c1712;
+    --line: rgba(201,162,75,.22);
+    --line-strong: rgba(201,162,75,.45);
+    --gold: #c9a24b;
+    --gold-bright: #e8c675;
+    --text: #f2ede2;
+    --text-muted: #9c9081;
+    --display: 'Bebas Neue', sans-serif;
+    --body: 'Work Sans', sans-serif;
+  }
+  *{ box-sizing:border-box; }
+  body{
+    margin:0; background:var(--bg); color:var(--text);
+    font-family:var(--body); font-weight:300; font-size:16px; line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{ max-width:1180px; margin:0 auto; padding:0 44px; }
+  .topbar{ padding:30px 0; border-bottom:1px solid var(--line); }
+  .back-link{ font-size:12px; letter-spacing:.12em; text-transform:uppercase; color:var(--text-muted); text-decoration:none; }
+  .back-link:hover{ color:var(--gold-bright); }
+
+  .gallery-header{ padding:64px 0 44px; }
+  .eyebrow{ font-size:11.5px; letter-spacing:.2em; text-transform:uppercase; color:var(--gold); margin-bottom:14px; }
+  h1{
+    font-family:var(--display); font-weight:400; font-size:clamp(2.2rem,5vw,3.6rem);
+    letter-spacing:.01em; margin:0 0 14px; color:var(--text);
+  }
+  .gallery-header p{ color:var(--text-muted); max-width:65ch; margin:0; font-size:15.5px; }
+
+  .post-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:34px 28px; padding-bottom:90px; }
+  .post-card{ display:flex; flex-direction:column; }
+  .post-image{
+    aspect-ratio:16/9; border:1px dashed var(--line-strong); background:linear-gradient(160deg,#1a1510,#100d0a);
+    display:flex; align-items:center; justify-content:center; overflow:hidden; margin-bottom:12px;
+    font-size:10.5px; letter-spacing:.1em; text-transform:uppercase; color:var(--text-muted); text-align:center; padding:8px;
+  }
+  .post-grid.portrait .post-image{ aspect-ratio:3/4; }
+  .post-image img{ width:100%; height:100%; object-fit:cover; display:block; }
+  .post-desc{ font-size:13.5px; color:var(--text-muted); margin:0; }
+
+  @media (max-width:860px){
+    .wrap{ padding:0 24px; }
+    .post-grid{ grid-template-columns:1fr 1fr; gap:26px 20px; }
+  }
+  @media (max-width:560px){
+    .post-grid{ grid-template-columns:1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="wrap">
+    <a class="back-link" href="../index.html#about">← Back to portfolio</a>
+  </div>
+</div>
+
+<div class="wrap">
+  <div class="gallery-header">
+    <div class="eyebrow">AI Tools</div>
+    <h1>Architectural Analysis</h1>
+    <p>AI-assisted architectural analysis and diagramming work.</p>
+  </div>
+
+  <div class="post-grid ">
+    <div class="post-card">
+      <div class="post-image">Post 01 — placeholder</div>
+      <p class="post-desc">Placeholder caption — describe this piece: the project, the technique, or what it shows.</p>
+    </div>
+    <div class="post-card">
+      <div class="post-image">Post 02 — placeholder</div>
+      <p class="post-desc">Placeholder caption — describe this piece: the project, the technique, or what it shows.</p>
+    </div>
+    <div class="post-card">
+      <div class="post-image">Post 03 — placeholder</div>
+      <p class="post-desc">Placeholder caption — describe this piece: the project, the technique, or what it shows.</p>
+    </div>
+    <div class="post-card">
+      <div class="post-image">Post 04 — placeholder</div>
+      <p class="post-desc">Placeholder caption — describe this piece: the project, the technique, or what it shows.</p>
+    </div>
+    <div class="post-card">
+      <div class="post-image">Post 05 — placeholder</div>
+      <p class="post-desc">Placeholder caption — describe this piece: the project, the technique, or what it shows.</p>
+    </div>
+    <div class="post-card">
+      <div class="post-image">Post 06 — placeholder</div>
+      <p class="post-desc">Placeholder caption — describe this piece: the project, the technique, or what it shows.</p>
+    </div>
+    <div class="post-card">
+      <div class="post-image">Post 07 — placeholder</div>
+      <p class="post-desc">Placeholder caption — describe this piece: the project, the technique, or what it shows.</p>
+    </div>
+    <div class="post-card">
+      <div class="post-image">Post 08 — placeholder</div>
+      <p class="post-desc">Placeholder caption — describe this piece: the project, the technique, or what it shows.</p>
+    </div>
+    <div class="post-card">
+      <div class="post-image">Post 09 — placeholder</div>
+      <p class="post-desc">Placeholder caption — describe this piece: the project, the technique, or what it shows.</p>
+    </div>
+    <div class="post-card">
+      <div class="post-image">Post 10 — placeholder</div>
+      <p class="post-desc">Placeholder caption — describe this piece: the project, the technique, or what it shows.</p>
+    </div>
+    <div class="post-card">
+      <div class="post-image">Post 11 — placeholder</div>
+      <p class="post-desc">Placeholder caption — describe this piece: the project, the technique, or what it shows.</p>
+    </div>
+    <div class="post-card">
+      <div class="post-image">Post 12 — placeholder</div>
+      <p class="post-desc">Placeholder caption — describe this piece: the project, the technique, or what it shows.</p>
+    </div>
+
+  </div>
+</div>
+
+</body>
+</html>
