@@ -134,6 +134,40 @@
   .word-intro.in .word-intro-badge{ opacity:1; transform:rotate(-8deg) scale(1); }
   .word-intro.in .word-intro-footer{ opacity:1; transform:translateY(0); }
 
+  /* ---------- photo-intro-v2: portrait left, split wordmark emerging from behind the right shoulder ---------- */
+  .photo-intro-stage{
+    position:relative; width:100%; max-width:980px; margin:0 auto;
+    display:flex; align-items:center; justify-content:center;
+    min-height:380px;
+  }
+  .photo-intro-portrait{
+    position:relative; z-index:2; flex:0 0 auto; width:min(46%, 380px);
+    margin-right:-15%;
+    opacity:0; transform:translateX(-28px);
+    transition:opacity 1.15s cubic-bezier(.16,1,.3,1) .2s, transform 1.15s cubic-bezier(.16,1,.3,1) .2s;
+  }
+  .photo-intro-portrait img{
+    width:100%; height:auto; display:block;
+    filter:drop-shadow(0 30px 70px rgba(0,0,0,.55));
+  }
+  .photo-intro-word{
+    position:relative; z-index:1; flex:0 0 auto;
+    display:flex; flex-direction:column; align-items:flex-end;
+    font-family:var(--serif); font-weight:600; letter-spacing:.01em;
+    font-size:clamp(2.3rem, 8vw, 5.4rem); line-height:.94;
+    color:var(--gold); text-shadow:0 0 60px rgba(201,162,75,.2);
+    text-align:right; padding-left:6%;
+  }
+  .photo-intro-word-line{
+    opacity:0; transform:translateX(30px);
+    transition:opacity 1.05s cubic-bezier(.16,1,.3,1), transform 1.05s cubic-bezier(.16,1,.3,1);
+  }
+  .photo-intro-word-line:first-child{ transition-delay:.45s; }
+  .photo-intro-word-line:last-child{ transition-delay:.6s; margin-top:-.04em; }
+
+  .word-intro.in .photo-intro-portrait{ opacity:1; transform:translateX(0); }
+  .word-intro.in .photo-intro-word-line{ opacity:1; transform:translateX(0); }
+
   /* ---------- hero v3: editorial split layout ---------- */
   .hero-v3{ position:relative; padding:150px 20px 0; overflow:hidden; }
   .hero-v3::before{
@@ -195,7 +229,8 @@
   .hero-v3-footer a:hover{ color:var(--gold-bright); }
 
   @media (prefers-reduced-motion: reduce){
-    .word-intro-tagline, .word-intro-word, .word-intro-portrait-wrap, .word-intro-badge, .word-intro-footer{
+    .word-intro-tagline, .word-intro-word, .word-intro-portrait-wrap, .word-intro-badge, .word-intro-footer,
+    .photo-intro-portrait, .photo-intro-word-line{
       transition:none !important; opacity:1 !important; transform:none !important;
     }
     .hero-v3-badge svg{ animation:none; }
@@ -698,6 +733,9 @@
     .video-grid{ grid-template-columns:1fr; }
     .word-intro-portrait-wrap{ width:min(58%, 300px); }
     .word-intro-badge{ position:static; margin-top:16px; transform:none; }
+    .photo-intro-stage{ flex-direction:column; gap:6px; min-height:auto; }
+    .photo-intro-portrait{ width:min(72%, 300px); margin-right:0; margin-bottom:-8%; }
+    .photo-intro-word{ align-items:center; text-align:center; padding-left:0; }
     .skill-bubble{ font-size:.88rem; padding:12px 20px; }
   }
 </style>
@@ -984,10 +1022,15 @@
 <section class="section reveal" id="photography">
   <div class="word-intro" id="photoWordIntro" style="padding-bottom:60px;">
     <div class="word-intro-tagline">Behind the Lens</div>
-    <div class="word-intro-word is-long">PHOTOGRAPHY</div>
-    <div class="word-intro-portrait-wrap">
-      <!-- Photographer1 should be a cutout with a transparent background (PNG) so it blends into the word behind it -->
-      <img src="Images/Photographer1.jpg" alt="Hadeel Zakaria behind the camera" loading="lazy" decoding="async">
+    <div class="photo-intro-stage">
+      <div class="photo-intro-portrait">
+        <!-- Zoomed-in cutout, flattened onto the site's dark background (#100d0a) so it still blends seamlessly as a JPG -->
+        <img src="Images/Photographer1-removebg-preview.jpg" alt="Hadeel Zakaria behind the camera" loading="lazy" decoding="async">
+      </div>
+      <div class="photo-intro-word">
+        <span class="photo-intro-word-line">PHOTO</span>
+        <span class="photo-intro-word-line">GRAPHY</span>
+      </div>
     </div>
     <div class="word-intro-footer">
       <div class="word-intro-signature">Hadeel Zakaria</div>
