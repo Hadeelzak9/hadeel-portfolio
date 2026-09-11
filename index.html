@@ -156,11 +156,11 @@
   }
   .photo-intro-word{
     position:relative; z-index:1; flex:0 0 auto;
-    display:flex; flex-direction:column; align-items:flex-end;
+    display:flex; flex-direction:column; align-items:flex-start;
     font-family:var(--serif); font-weight:600; letter-spacing:.01em;
     font-size:clamp(2.3rem, 8vw, 5.4rem); line-height:.94;
     color:var(--gold); text-shadow:0 0 60px rgba(201,162,75,.2);
-    text-align:right; padding-left:6%;
+    text-align:left; padding-left:6%;
     transform:translateY(-26%);
   }
   .photo-intro-word-line{
@@ -991,7 +991,7 @@
         <div class="case-frame-main">
           <span class="case-corner tl"></span>
           <span class="case-corner bl"></span>
-          <img id="caseMainImg" src="Images/Graduation.jpg" alt="Fishing Regeneration Hub" decoding="async">
+          <img id="caseMainImg" src="Images/Graduation.jpg" alt="Fishing Regeneration Hub" loading="lazy" decoding="async">
 
           <div class="case-thumbs" id="caseThumbs">
             <button type="button" class="case-thumb active" data-no="01" data-title="Fishing Regeneration Hub" data-year="2025" data-tag="Graduation Project" data-desc="A graduation project exploring adaptive reuse and coastal regeneration for a working fishing community." data-img="Images/Graduation.jpg" data-href="projects/fishing-regeneration-hub.html">
