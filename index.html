@@ -744,10 +744,12 @@
     // restoring whatever scroll position was last used on this page.
     // (Direct scrollTop assignment is instant and ignores the smooth
     // scroll-behavior set on <html>, unlike window.scrollTo().)
+    // Note: document.body doesn't exist yet at this point (we're still
+    // inside <head>), so only documentElement is safe to touch here —
+    // body.scrollTop is reset by the script right after <body> opens.
     if ('scrollRestoration' in history) { history.scrollRestoration = 'manual'; }
     if (!location.hash) {
       document.documentElement.scrollTop = 0;
-      document.body.scrollTop = 0;
     }
   </script>
 </head>
