@@ -126,6 +126,20 @@
   }
   .gallery-item:hover img{ filter:brightness(1); transform:scale(1.03); }
 
+  /* ---------- press / external coverage links ---------- */
+  .press-section{ padding-bottom:110px; }
+  .press-note{ font-size:15px; color:var(--text-muted); max-width:60ch; margin:0 0 18px; }
+  .press-links{ display:flex; flex-direction:column; gap:12px; align-items:flex-start; }
+  .press-link{
+    display:inline-flex; align-items:center; gap:10px;
+    font-size:14px; color:var(--text); text-decoration:none;
+    border-bottom:1px solid var(--line-strong); padding-bottom:3px;
+    transition:color .3s ease, border-color .3s ease;
+  }
+  .press-link:hover{ color:var(--gold-bright); border-color:var(--gold); }
+  .press-link span.press-link-arrow{ transition:transform .3s ease; }
+  .press-link:hover span.press-link-arrow{ transform:translateX(3px); }
+
   @media (max-width:860px){
     .wrap{ padding:0 24px; }
     .back-link{ margin:24px 24px 0; }
@@ -208,6 +222,15 @@
     <a class="gallery-item" href="#" data-full="../Images/cer 3 (2).jpg">
       <img src="../Images/cer 3 (2).jpg" alt="Award certificate 3" loading="lazy" decoding="async">
     </a>
+  </div>
+
+  <div class="press-section">
+    <div class="gallery-eyebrow">Press &amp; Recognition</div>
+    <p class="press-note">For an outside perspective on the competition and its results, MSA University covered the win from their own side — worth a read alongside a behind-the-scenes look shared on Facebook:</p>
+    <div class="press-links">
+      <a class="press-link" href="https://www.facebook.com/share/1C1pV5Kmxz/" target="_blank" rel="noopener">Facebook — behind the scenes <span class="press-link-arrow">→</span></a>
+      <a class="press-link" href="https://msa.edu.eg/msauniversity/top-achievers/re-cond25-international-competition-winners/" target="_blank" rel="noopener">MSA University — RE-ConD'25 Winners <span class="press-link-arrow">→</span></a>
+    </div>
   </div>
 </div>
 
