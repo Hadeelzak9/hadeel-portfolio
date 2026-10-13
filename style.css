@@ -758,3 +758,24 @@
     .word-intro-badge{ position:static; margin-top:16px; transform:none; }
     .skill-bubble{ font-size:.88rem; padding:12px 20px; }
   }
+  /* ---------- photography gallery: soft unveil + drifting columns (JS adds .js-gallery, so no-JS visitors just see the grid) ---------- */
+  .photo-bento{ padding-bottom:36px; }
+  .js-gallery .bento-item.gv-hide{
+    opacity:0; transform:translateY(64px) scale(.92);
+    clip-path:inset(14% 6% 14% 6% round 24px);
+  }
+  .js-gallery .bento-item.gv-show{
+    opacity:1; transform:none; clip-path:inset(0% 0% 0% 0% round 20px);
+    transition:
+      opacity .9s ease var(--gv-d,0ms),
+      transform 1.1s cubic-bezier(.16,1,.3,1) var(--gv-d,0ms),
+      clip-path 1.1s cubic-bezier(.16,1,.3,1) var(--gv-d,0ms);
+  }
+  .js-gallery .bento-photo.gv-hide img.base{ transform:scale(1.22); }
+  .js-gallery .bento-photo.gv-show img.base{
+    transform:scale(1);
+    transition:transform 1.7s cubic-bezier(.16,1,.3,1) var(--gv-d,0ms), opacity .5s ease;
+  }
+  @media (max-width:860px){
+    .js-gallery .bento-item.gv-hide{ clip-path:inset(10% 4% 10% 4% round 16px); }
+  }
