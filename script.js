@@ -197,3 +197,64 @@ window.addEventListener('load', () => {
   document.addEventListener('keydown', (e)=>{
     if(e.key === 'Escape'){ closeLightbox(); closeImageViewer(); }
   });
+
+  // Photography gallery: tiles unveil in a soft cascade as they enter view, and the columns
+  // drift at slightly different speeds while scrolling (desktop only). Skipped for reduced motion.
+  (function(){
+    const grid = document.getElementById('photoBento');
+    if(!grid || !('IntersectionObserver' in window)) return;
+    if(window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    const tiles = Array.from(grid.querySelectorAll('.bento-item'));
+    document.documentElement.classList.add('js-gallery');
+    tiles.forEach(t => t.classList.add('gv-hide'));
+
+    // --- cascade reveal ---
+    const revealIO = new IntersectionObserver((entries)=>{
+      const batch = entries.filter(e => e.isIntersecting).sort((a,b)=>{
+        const ra = a.boundingClientRect, rb = b.boundingClientRect;
+        return (ra.top - rb.top) || (ra.left - rb.left);
+      });
+      batch.forEach((e, i)=>{
+        const t = e.target, delay = Math.min(i * 80, 480);
+        t.style.setProperty('--gv-d', delay + 'ms');
+        t.classList.replace('gv-hide', 'gv-show');
+        revealIO.unobserve(t);
+        // hand control back to the normal hover styles once the intro has finished
+        setTimeout(()=>{
+          t.classList.remove('gv-show');
+          t.style.removeProperty('--gv-d');
+        }, delay + 1900);
+      });
+    }, { threshold:.1, rootMargin:'0px 0px -5% 0px' });
+    tiles.forEach(t => revealIO.observe(t));
+
+    // --- drifting columns ---
+    const speeds = [-0.045, 0.03, -0.025, 0.05];
+    let colOf = new Map(), ticking = false;
+    function mapColumns(){
+      const lefts = [...new Set(tiles.map(t => t.offsetLeft))].sort((a,b)=>a-b);
+      colOf = new Map(tiles.map(t => [t, lefts.indexOf(t.offsetLeft)]));
+    }
+    function drift(){
+      ticking = false;
+      const on = window.innerWidth > 860;
+      const vc = window.innerHeight / 2;
+      tiles.forEach(t=>{
+        const prev = parseFloat(t.dataset.dy || '0');
+        if(!on){ if(prev){ t.style.translate = ''; t.dataset.dy = '0'; } return; }
+        const r = t.getBoundingClientRect();
+        if(r.bottom < -120 || r.top > window.innerHeight + 120) return;
+        const base = r.top + r.height / 2 - prev;
+        const s = speeds[(colOf.get(t) || 0) % speeds.length];
+        const dy = Math.max(-26, Math.min(26, (base - vc) * s));
+        t.dataset.dy = dy.toFixed(1);
+        t.style.translate = '0 ' + dy.toFixed(1) + 'px';
+      });
+    }
+    function queue(){ if(!ticking){ ticking = true; requestAnimationFrame(drift); } }
+    mapColumns(); queue();
+    window.addEventListener('scroll', queue, { passive:true });
+    window.addEventListener('resize', ()=>{ mapColumns(); queue(); });
+    window.addEventListener('load', ()=>{ mapColumns(); queue(); });
+  })();
