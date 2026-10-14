@@ -198,51 +198,127 @@ window.addEventListener('load', () => {
     if(e.key === 'Escape'){ closeLightbox(); closeImageViewer(); }
   });
 
-  // Photography gallery: tiles unveil in a soft cascade as they enter view, and the columns
-  // drift at slightly different speeds while scrolling (desktop only). Skipped for reduced motion.
+
+  // ===================================================================================
+  // Photography gallery: three switchable layouts (mosaic / rows / strip) that glide into
+  // each other, a soft cascade reveal, drifting columns, and cursor tilt + glow on hover.
+  // ===================================================================================
   (function(){
     const grid = document.getElementById('photoBento');
-    if(!grid || !('IntersectionObserver' in window)) return;
-    if(window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    if(!grid) return;
+    const tiles  = Array.from(grid.querySelectorAll('.bento-item'));
+    const photos = tiles.filter(t => t.classList.contains('bento-photo'));
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const fineHover = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+    let mode = 'mosaic';
+    let driftPausedUntil = 0;
 
-    const tiles = Array.from(grid.querySelectorAll('.bento-item'));
-    document.documentElement.classList.add('js-gallery');
-    tiles.forEach(t => t.classList.add('gv-hide'));
+    // ---- 1. number + location label on every photo ----
+    photos.forEach((t, i)=>{
+      const label = document.createElement('div');
+      label.className = 'loc';
+      const no = document.createElement('span');
+      no.className = 'loc-no';
+      no.textContent = String(i + 1).padStart(2, '0');
+      label.appendChild(no);
+      const place = t.getAttribute('data-location');
+      if(place){
+        const nm = document.createElement('span');
+        nm.className = 'loc-name';
+        nm.textContent = place;
+        label.appendChild(nm);
+      }
+      t.appendChild(label);
+      t.querySelectorAll('img').forEach(im => im.setAttribute('draggable', 'false'));
+    });
 
-    // --- cascade reveal ---
-    const revealIO = new IntersectionObserver((entries)=>{
-      const batch = entries.filter(e => e.isIntersecting).sort((a,b)=>{
-        const ra = a.boundingClientRect, rb = b.boundingClientRect;
-        return (ra.top - rb.top) || (ra.left - rb.left);
+    // ---- 2. layout switcher ----
+    const MODES = [
+      { id:'mosaic', label:'Mosaic', icon:'<svg viewBox="0 0 16 16" aria-hidden="true"><rect x="1.5" y="1.5" width="5" height="7"/><rect x="9.5" y="1.5" width="5" height="4"/><rect x="1.5" y="11" width="5" height="3.5"/><rect x="9.5" y="8" width="5" height="6.5"/></svg>' },
+      { id:'rows',   label:'Rows',   icon:'<svg viewBox="0 0 16 16" aria-hidden="true"><rect x="1.5" y="2" width="6" height="5"/><rect x="9.5" y="2" width="5" height="5"/><rect x="1.5" y="9.5" width="4" height="5"/><rect x="7.5" y="9.5" width="7" height="5"/></svg>' },
+      { id:'strip',  label:'Strip',  icon:'<svg viewBox="0 0 16 16" aria-hidden="true"><rect x="0.75" y="4" width="3.5" height="8"/><rect x="6" y="3" width="4.5" height="10"/><rect x="12" y="4" width="3.25" height="8"/></svg>' }
+    ];
+    const bar = document.createElement('div');
+    bar.className = 'gallery-modes';
+    bar.dataset.mode = mode;
+    const group = document.createElement('div');
+    group.className = 'gm-group';
+    group.setAttribute('role', 'group');
+    group.setAttribute('aria-label', 'Gallery layout');
+    const buttons = MODES.map(m=>{
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'gm-btn';
+      b.dataset.mode = m.id;
+      b.setAttribute('aria-pressed', m.id === mode ? 'true' : 'false');
+      b.innerHTML = m.icon + '<span>' + m.label + '</span>';
+      b.addEventListener('click', ()=> setMode(m.id));
+      group.appendChild(b);
+      return b;
+    });
+    const arrows = document.createElement('div');
+    arrows.className = 'gm-arrows';
+    [['‹', -1, 'Scroll left'], ['›', 1, 'Scroll right']].forEach(([ch, dir, label])=>{
+      const a = document.createElement('button');
+      a.type = 'button';
+      a.className = 'gm-arrow';
+      a.textContent = ch;
+      a.setAttribute('aria-label', label);
+      a.addEventListener('click', ()=> grid.scrollBy({ left: dir * grid.clientWidth * 0.8, behavior: reduce ? 'auto' : 'smooth' }));
+      arrows.appendChild(a);
+    });
+    bar.appendChild(group);
+    bar.appendChild(arrows);
+    const prevEl = grid.previousElementSibling;
+    if(prevEl && prevEl.classList.contains('wrap')) prevEl.appendChild(bar);
+    else grid.parentNode.insertBefore(bar, grid);
+
+    // ---- 3. cascade reveal as tiles enter view ----
+    let revealIO = null;
+    if(!reduce && 'IntersectionObserver' in window){
+      document.documentElement.classList.add('js-gallery');
+      tiles.forEach(t => t.classList.add('gv-hide'));
+      revealIO = new IntersectionObserver((entries)=>{
+        const batch = entries.filter(e => e.isIntersecting).sort((a, b)=>{
+          const ra = a.boundingClientRect, rb = b.boundingClientRect;
+          return (ra.top - rb.top) || (ra.left - rb.left);
+        });
+        batch.forEach((e, i)=>{
+          const t = e.target, delay = Math.min(i * 80, 480);
+          t.style.setProperty('--gv-d', delay + 'ms');
+          t.classList.replace('gv-hide', 'gv-show');
+          revealIO.unobserve(t);
+          setTimeout(()=>{ t.classList.remove('gv-show'); t.style.removeProperty('--gv-d'); }, delay + 1900);
+        });
+      }, { threshold: 0.1, rootMargin: '0px 0px -5% 0px' });
+      tiles.forEach(t => revealIO.observe(t));
+    }
+    function revealAll(){
+      tiles.forEach(t=>{
+        if(revealIO) revealIO.unobserve(t);
+        t.classList.remove('gv-hide', 'gv-show');
+        t.style.removeProperty('--gv-d');
       });
-      batch.forEach((e, i)=>{
-        const t = e.target, delay = Math.min(i * 80, 480);
-        t.style.setProperty('--gv-d', delay + 'ms');
-        t.classList.replace('gv-hide', 'gv-show');
-        revealIO.unobserve(t);
-        // hand control back to the normal hover styles once the intro has finished
-        setTimeout(()=>{
-          t.classList.remove('gv-show');
-          t.style.removeProperty('--gv-d');
-        }, delay + 1900);
-      });
-    }, { threshold:.1, rootMargin:'0px 0px -5% 0px' });
-    tiles.forEach(t => revealIO.observe(t));
+    }
 
-    // --- drifting columns ---
+    // ---- 4. drifting columns (mosaic layout, wide screens only) ----
     const speeds = [-0.045, 0.03, -0.025, 0.05];
     let colOf = new Map(), ticking = false;
     function mapColumns(){
-      const lefts = [...new Set(tiles.map(t => t.offsetLeft))].sort((a,b)=>a-b);
+      const lefts = [...new Set(tiles.map(t => t.offsetLeft))].sort((a, b)=> a - b);
       colOf = new Map(tiles.map(t => [t, lefts.indexOf(t.offsetLeft)]));
     }
+    function clearDrift(){ tiles.forEach(t=>{ t.style.translate = ''; t.dataset.dy = '0'; }); }
     function drift(){
       ticking = false;
-      const on = window.innerWidth > 860;
+      if(reduce) return;
+      if(mode !== 'mosaic' || window.innerWidth <= 860 || performance.now() < driftPausedUntil){
+        if(mode !== 'mosaic' || window.innerWidth <= 860) clearDrift();
+        return;
+      }
       const vc = window.innerHeight / 2;
       tiles.forEach(t=>{
         const prev = parseFloat(t.dataset.dy || '0');
-        if(!on){ if(prev){ t.style.translate = ''; t.dataset.dy = '0'; } return; }
         const r = t.getBoundingClientRect();
         if(r.bottom < -120 || r.top > window.innerHeight + 120) return;
         const base = r.top + r.height / 2 - prev;
@@ -253,8 +329,115 @@ window.addEventListener('load', () => {
       });
     }
     function queue(){ if(!ticking){ ticking = true; requestAnimationFrame(drift); } }
-    mapColumns(); queue();
-    window.addEventListener('scroll', queue, { passive:true });
+    window.addEventListener('scroll', queue, { passive: true });
     window.addEventListener('resize', ()=>{ mapColumns(); queue(); });
     window.addEventListener('load', ()=>{ mapColumns(); queue(); });
+    mapColumns(); queue();
+
+    // ---- 5. switching layouts: measure first, change layout, then glide every tile from old to new place (FLIP) ----
+    function setMode(next){
+      if(next === mode) return;
+      revealAll();
+      clearDrift();
+      const first = tiles.map(t => t.getBoundingClientRect());
+      grid.classList.remove('mode-' + mode);
+      grid.classList.add('mode-' + next);
+      mode = next;
+      grid.scrollLeft = 0;
+      bar.dataset.mode = next;
+      buttons.forEach(b => b.setAttribute('aria-pressed', b.dataset.mode === next ? 'true' : 'false'));
+      mapColumns();
+      driftPausedUntil = performance.now() + 1300;
+      setTimeout(queue, 1320);
+
+      // bring the switcher near the top so the reshuffle plays in view
+      const br = bar.getBoundingClientRect();
+      if(br.top > window.innerHeight * 0.5 || br.top < 70){
+        window.scrollTo({ top: br.top + window.scrollY - 100, behavior: reduce ? 'auto' : 'smooth' });
+      }
+
+      if(reduce) return;
+      const vw = window.innerWidth, vh = window.innerHeight;
+      tiles.forEach((t, i)=>{
+        const f = first[i], l = t.getBoundingClientRect();
+        const farAway = (r)=> r.bottom < -vh * 0.5 || r.top > vh * 1.5 || r.right < -vw * 0.5 || r.left > vw * 1.5;
+        if(farAway(f) && farAway(l)) return;
+        const dx = f.left - l.left, dy = f.top - l.top;
+        const sx = f.width / l.width, sy = f.height / l.height;
+        if(!isFinite(sx) || !isFinite(sy) || !l.width || !l.height) return;
+        if(Math.abs(dx) < 1 && Math.abs(dy) < 1 && Math.abs(sx - 1) < 0.01 && Math.abs(sy - 1) < 0.01) return;
+        t.animate([
+          { transformOrigin: '0 0', transform: 'translate(' + dx + 'px,' + dy + 'px) scale(' + sx + ',' + sy + ')' },
+          { transformOrigin: '0 0', transform: 'none' }
+        ], { duration: 900, delay: Math.min(i * 16, 320), easing: 'cubic-bezier(.16,1,.3,1)', fill: 'backwards' });
+      });
+    }
+
+    // ---- 6. cursor tilt + glow on photos (mouse / trackpad only) ----
+    if(fineHover && !reduce){
+      grid.addEventListener('pointermove', (e)=>{
+        const t = e.target.closest ? e.target.closest('.bento-photo') : null;
+        if(!t || grid.classList.contains('dragging')) return;
+        const r = t.getBoundingClientRect();
+        const x = (e.clientX - r.left) / r.width, y = (e.clientY - r.top) / r.height;
+        t.style.setProperty('--mx', (x * 100).toFixed(1) + '%');
+        t.style.setProperty('--my', (y * 100).toFixed(1) + '%');
+        t.style.setProperty('--ry', ((x - 0.5) * 7).toFixed(2) + 'deg');
+        t.style.setProperty('--rx', ((0.5 - y) * 7).toFixed(2) + 'deg');
+      });
+      grid.addEventListener('pointerout', (e)=>{
+        const t = e.target.closest ? e.target.closest('.bento-photo') : null;
+        if(!t || t.contains(e.relatedTarget)) return;
+        t.style.setProperty('--rx', '0deg');
+        t.style.setProperty('--ry', '0deg');
+      });
+    }
+
+    // ---- 6b. analysis reveal grows from the click point; photos work with the keyboard too ----
+    photos.forEach(t=>{
+      t.setAttribute('tabindex', '0');
+      t.setAttribute('role', 'button');
+      const alt = t.querySelector('img.base');
+      t.setAttribute('aria-label', (alt ? alt.alt : 'Photo') + ' — reveal analysis');
+      t.addEventListener('keydown', (e)=>{
+        if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); t.click(); }
+      });
+    });
+    grid.addEventListener('click', (e)=>{
+      const t = e.target.closest ? e.target.closest('.bento-photo') : null;
+      if(!t || t.classList.contains('active')) return;
+      const r = t.getBoundingClientRect();
+      const fromKeyboard = e.detail === 0 || !r.width;
+      const x = fromKeyboard ? 50 : (e.clientX - r.left) / r.width * 100;
+      const y = fromKeyboard ? 50 : (e.clientY - r.top) / r.height * 100;
+      t.style.setProperty('--cx', x.toFixed(1) + '%');
+      t.style.setProperty('--cy', y.toFixed(1) + '%');
+      const hint = t.querySelector('.hint');
+      if(hint) hint.textContent = 'Click again to open side by side';
+    }, true);
+
+    // ---- 7. strip: drag with the mouse (touch + trackpad scroll natively); a drag must not count as a click ----
+    let drag = null, dragMoved = false;
+    grid.addEventListener('pointerdown', (e)=>{
+      if(mode !== 'strip' || e.pointerType !== 'mouse' || e.button !== 0) return;
+      drag = { x: e.clientX, left: grid.scrollLeft };
+      dragMoved = false;
+    });
+    window.addEventListener('pointermove', (e)=>{
+      if(!drag) return;
+      const dx = e.clientX - drag.x;
+      if(!dragMoved && Math.abs(dx) > 6){ dragMoved = true; grid.classList.add('dragging'); }
+      if(dragMoved) grid.scrollLeft = drag.left - dx;
+    });
+    function endDrag(){
+      if(!drag) return;
+      drag = null;
+      grid.classList.remove('dragging');
+      setTimeout(()=>{ dragMoved = false; }, 60);
+    }
+    window.addEventListener('pointerup', endDrag);
+    window.addEventListener('pointercancel', endDrag);
+    grid.addEventListener('click', (e)=>{
+      if(dragMoved){ e.stopPropagation(); e.preventDefault(); }
+    }, true);
   })();
