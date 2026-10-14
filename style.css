@@ -758,8 +758,107 @@
     .word-intro-badge{ position:static; margin-top:16px; transform:none; }
     .skill-bubble{ font-size:.88rem; padding:12px 20px; }
   }
-  /* ---------- photography gallery: soft unveil + drifting columns (JS adds .js-gallery, so no-JS visitors just see the grid) ---------- */
-  .photo-bento{ padding-bottom:36px; }
+
+  /* =====================================================================
+     PHOTOGRAPHY GALLERY — three switchable layouts (mosaic / rows / strip),
+     animated reshuffle between them, cascade reveal, tilt + glow on hover.
+     Everything below is progressive: without JS you still get the mosaic.
+     ===================================================================== */
+  .photo-bento{
+    --row-h:250px; --strip-h:clamp(320px, 66vh, 640px);
+    --strip-pad:max(24px, calc((100vw - 1180px) / 2 + 44px));
+    padding-bottom:36px;
+  }
+
+  /* photos always reserve their true shape, so nothing jumps while images load and nothing is ever cropped */
+  .bento-photo{ aspect-ratio:var(--ar); }
+  .bento-photo img.base{ height:100%; object-fit:cover; transition:opacity .5s ease, transform .9s cubic-bezier(.16,1,.3,1); }
+  .bento-photo img{ -webkit-user-drag:none; user-select:none; }
+  .bento-text{ --ar:1.35; }
+
+  /* ---- layout 2: justified rows (every row fills the width, photos keep their ratio) ---- */
+  .photo-bento.mode-rows{
+    column-count:auto; display:flex; flex-wrap:wrap; gap:14px; align-items:flex-start;
+    padding-left:14px; padding-right:14px;
+  }
+  .photo-bento.mode-rows::after{ content:''; flex-grow:1000000; }
+  .photo-bento.mode-rows .bento-item{
+    margin:0; flex-grow:var(--ar); flex-shrink:1; flex-basis:calc(var(--ar) * var(--row-h));
+  }
+  .photo-bento.mode-rows .bento-text{ --ar:.9; aspect-ratio:var(--ar); min-height:0; padding:22px 20px; }
+  .photo-bento.mode-rows .bento-text p{ font-size:1.15rem; line-height:1.35; }
+
+  /* ---- layout 3: film strip (one sideways row; drag, swipe, scroll or use the arrows) ---- */
+  .photo-bento.mode-strip{
+    column-count:auto; display:flex; flex-wrap:nowrap; gap:16px; align-items:flex-start;
+    overflow-x:auto; overflow-y:hidden; padding:10px var(--strip-pad) 30px;
+    cursor:grab; overscroll-behavior-x:contain;
+    scrollbar-width:thin; scrollbar-color:var(--gold) transparent;
+  }
+  .photo-bento.mode-strip.dragging{ cursor:grabbing; }
+  @media (pointer:coarse){ .photo-bento.mode-strip{ scroll-snap-type:x proximity; } }
+  .photo-bento.mode-strip .bento-item{
+    margin:0; flex:0 0 auto; scroll-snap-align:center;
+    height:var(--strip-h); width:calc(var(--strip-h) * var(--ar)); aspect-ratio:auto;
+  }
+  .photo-bento.mode-strip .bento-text{ width:calc(var(--strip-h) * .62); min-height:0; padding:28px 24px; }
+  .photo-bento.mode-strip .bento-text p{ font-size:1.5rem; line-height:1.3; }
+  .photo-bento.mode-strip::-webkit-scrollbar{ height:6px; }
+  .photo-bento.mode-strip::-webkit-scrollbar-thumb{ background:var(--gold); border-radius:6px; }
+
+  /* ---- hover: cursor glow, soft 3D tilt, slow push-in, location label ---- */
+  .bento-photo{
+    transform:perspective(900px) rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg)) translateY(0);
+    transition:border-color .3s ease, box-shadow .35s ease, transform .3s cubic-bezier(.2,.8,.2,1), translate .7s cubic-bezier(.2,.8,.2,1);
+  }
+  .bento-photo:hover{
+    transform:perspective(900px) rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg)) translateY(-5px);
+  }
+  .bento-photo:hover img.base{ transform:scale(1.045); }
+  .bento-photo::before{
+    content:''; position:absolute; inset:0; z-index:3; pointer-events:none; opacity:0;
+    background:radial-gradient(380px circle at var(--mx,50%) var(--my,50%), rgba(232,198,117,.22), transparent 58%);
+    mix-blend-mode:screen; transition:opacity .35s ease;
+  }
+  .bento-photo:hover::before{ opacity:1; }
+  .bento-photo .loc{
+    position:absolute; left:14px; right:14px; bottom:30px; z-index:4; pointer-events:none;
+    display:flex; align-items:baseline; gap:10px;
+    opacity:0; transform:translateY(10px); transition:opacity .35s ease, transform .45s cubic-bezier(.16,1,.3,1);
+  }
+  .bento-photo:hover .loc, .bento-photo.active .loc{ opacity:1; transform:translateY(0); }
+  .bento-photo .loc-no{ font-family:var(--display); font-size:1.15rem; letter-spacing:.06em; color:var(--gold-bright); }
+  .bento-photo .loc-name{ font-size:11.5px; line-height:1.35; letter-spacing:.04em; color:var(--text); text-shadow:0 1px 12px rgba(0,0,0,.7); }
+  .bento-text{ transition:filter .4s ease, translate .7s cubic-bezier(.2,.8,.2,1); }
+  .bento-text:hover{ filter:brightness(1.1); }
+
+  /* ---- layout switcher ---- */
+  .gallery-modes{
+    display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap;
+    margin:28px 0 34px;
+  }
+  .gm-group{ display:inline-flex; gap:8px; flex-wrap:wrap; }
+  .gm-btn{
+    display:inline-flex; align-items:center; gap:9px; cursor:pointer;
+    font:inherit; font-size:11px; letter-spacing:.14em; text-transform:uppercase;
+    color:var(--text-muted); background:transparent; border:1px solid var(--line-strong);
+    padding:9px 16px; border-radius:999px;
+    transition:color .3s ease, background .3s ease, border-color .3s ease;
+  }
+  .gm-btn svg{ width:15px; height:15px; fill:none; stroke:currentColor; stroke-width:1.5; }
+  .gm-btn:hover{ color:var(--gold-bright); border-color:var(--gold); }
+  .gm-btn[aria-pressed="true"]{ background:var(--gold); border-color:var(--gold); color:#100d0a; }
+  .gm-btn:focus-visible, .gm-arrow:focus-visible{ outline:2px solid var(--gold-bright); outline-offset:3px; }
+  .gm-arrows{ display:none; gap:8px; }
+  .gallery-modes[data-mode="strip"] .gm-arrows{ display:inline-flex; }
+  .gm-arrow{
+    width:38px; height:38px; border-radius:50%; cursor:pointer; font-size:15px; line-height:1;
+    color:var(--text-muted); background:transparent; border:1px solid var(--line-strong);
+    transition:color .3s ease, background .3s ease, border-color .3s ease;
+  }
+  .gm-arrow:hover{ color:#100d0a; background:var(--gold); border-color:var(--gold); }
+
+  /* ---- cascade reveal (JS adds .js-gallery) ---- */
   .js-gallery .bento-item.gv-hide{
     opacity:0; transform:translateY(64px) scale(.92);
     clip-path:inset(14% 6% 14% 6% round 24px);
@@ -776,6 +875,29 @@
     transform:scale(1);
     transition:transform 1.7s cubic-bezier(.16,1,.3,1) var(--gv-d,0ms), opacity .5s ease;
   }
+
+  /* ---- analysis reveal: opens as a circle from the exact spot you clicked ---- */
+  .bento-photo img.analysis{
+    opacity:1; clip-path:circle(0% at var(--cx,50%) var(--cy,50%));
+    transition:clip-path 1.05s cubic-bezier(.65,0,.35,1);
+  }
+  .bento-photo.active img.analysis{ opacity:1; clip-path:circle(150% at var(--cx,50%) var(--cy,50%)); }
+  .bento-photo.active img.base{ opacity:1; }
+  .bento-photo:focus-visible{ outline:2px solid var(--gold-bright); outline-offset:3px; }
+
+  /* ---- responsive ---- */
+  @media (max-width:1100px){ .photo-bento{ --row-h:200px; } }
   @media (max-width:860px){
     .js-gallery .bento-item.gv-hide{ clip-path:inset(10% 4% 10% 4% round 16px); }
+    .photo-bento.mode-rows{ gap:10px; padding-left:10px; padding-right:10px; }
+    .photo-bento.mode-strip{ gap:12px; --strip-h:clamp(300px, 58vh, 520px); }
+    .bento-photo .loc{ opacity:1; transform:none; bottom:26px; }   /* no hover on touch: always show the label */
+    .gallery-modes{ margin:22px 0 26px; }
+  }
+  @media (max-width:560px){ .photo-bento{ --row-h:150px; } }
+
+  @media (prefers-reduced-motion: reduce){
+    .bento-photo, .bento-photo img.base, .bento-photo img.analysis, .bento-photo .loc{ transition:none !important; }
+    .bento-photo:hover{ transform:none; }
+    .bento-photo:hover img.base{ transform:none; }
   }
